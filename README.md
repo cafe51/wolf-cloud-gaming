@@ -194,20 +194,21 @@ sudo apt install -y mesa-va-drivers gstreamer1.0-vaapi
 git clone https://github.com/cafe51/wolf-cloud-gaming.git
 cd wolf-cloud-gaming
 
-# 1. Configurar variáveis de ambiente para o Docker Compose (.env)
+# 1. Ajuste as variáveis de ambiente locais (.env)
 cp .env.example .env
 nano .env
 
-# 2. Criar a configuração ativa do Wolf a partir do exemplo
-sudo mkdir -p /etc/wolf/cfg
-cp config.example.toml /etc/wolf/cfg/config.toml
+# 2. Execute o assistente de configuração automatizada:
+chmod +x setup.sh
+./setup.sh
 
-# Caso tenha alterado WOLF_BASE_DIR no .env para um caminho diferente de /opt/wolf-data,
-# ajuste os caminhos no arquivo TOML:
+# (Opcional) Se preferir fazer manualmente sem o script:
+# sudo mkdir -p /etc/wolf/cfg
+# sudo cp config.example.toml /etc/wolf/cfg/config.toml
 # sudo sed -i "s|/opt/wolf-data|$WOLF_BASE_DIR|g" /etc/wolf/cfg/config.toml
 ```
 
-> 💡 **Arquitetura de Inicialização (cont-init.d + apt-cache):** Os containers utilizam o padrão `s6-overlay` (`/etc/cont-init.d/`) com diretórios de cache persistentes (`apt-cache`). Isso garante que pacotes como `dolphin-emu` sejam instalados em milissegundos a partir dos `.deb` em cache local montados pelo host, sem necessidade de reconstruir as imagens upstream a cada atualização do sistema.
+> 💡 **Arquitetura de Inicialização (cont-init.d + apt-cache):** Os containers utilizam o padrão `s6-overlay` (`/etc/cont-init.d/`) com diretórios de cache persistentes (`apt-cache`). Isso garante que pacotes como `dolphin-emu` sejam instalados em milissegundos a partir dos arquivos `.deb` em cache local (`profiles/default/bin/dolphin-standalone/apt-cache/`) montados pelo host, sem necessidade de reconstruir as imagens upstream a cada atualização do sistema. Para pré-popular pacotes em um ambiente novo, você pode utilizar `apt-get download` para salvar os `.deb` diretamente na pasta de cache.
 
 ### 4. Baixar Imagens Docker
 ```bash
