@@ -163,6 +163,18 @@ Daemon em Python que escuta a árvore IPC do **Sway**. Garante que janelas de jo
 ### 3. Heroic Launcher em Wayland (`bin/heroic-*`)
 Permite executar o cliente Electron do Heroic diretamente sobre o compositor Wayland sem dependência de X11 legado (`--ozone-platform=wayland`).
 
+### 4. Preparação de Binários Standalone / AppImages
+Como os containers gráficos do Wolf rodam com restrições de montagem de FUSE interno, aplicativos distribuídos em `.AppImage` (como o Heroic) são executados a partir de suas pastas descompactadas:
+```bash
+# Extração do Heroic:
+chmod +x Heroic-*.AppImage && ./Heroic-*.AppImage --appimage-extract
+mv squashfs-root profiles/default/bin/squashfs-root
+
+# Extração do Ryujinx (Switch):
+chmod +x Ryujinx-*.AppImage && ./Ryujinx-*.AppImage --appimage-extract
+# A pasta extraída é mapeada para o container e executada pelo wrapper citron.AppImage
+```
+
 ---
 
 ## 🚀 Guia de Instalação e Setup Passo a Passo

@@ -33,18 +33,38 @@ echo "-> Diretório base (WOLF_BASE_DIR): $WOLF_BASE_DIR"
 echo "-> Diretório de ROMs (ROMS_DIR): $ROMS_DIR"
 echo "-> Biblioteca Steam (STEAM_LIBRARY_DIR): $STEAM_LIBRARY_DIR"
 
-# 2. Carregar módulos do kernel para gamepad virtual
+# 2. Criar diretórios de perfil e estado antes do Docker subir (evita criação como root)
+echo "-> Garantindo diretórios de perfis e estado..."
+mkdir -p "${WOLF_BASE_DIR}/profiles/default"/{steam-data,retroarch-cores,retroarch-config,pcsx2-config,logs,es-de-config,waybar-config,icons}
+mkdir -p "${WOLF_BASE_DIR}/state"
+
+# 3. Carregar módulos do kernel para gamepad virtual
 echo "-> Verificando módulos de kernel uhid e uinput..."
 sudo modprobe uhid uinput 2>/dev/null || true
 if [ ! -f /etc/modules-load.d/uhid.conf ]; then
     echo "uhid" | sudo tee /etc/modules-load.d/uhid.conf >/dev/null || true
 fi
 
-# 3. Garantir permissões de execução nos scripts customizados
+# 4. Configurar regra udev persistente para /dev/uinput (resiliente a reboots)
+echo "-> Configurando permissões persistentes para /dev/uinput via udev..."
+if [ ! -f /etc/udev/rules.d/85-wolf-uinput.rules ]; then
+    echo 'KERNEL=="uinput", MODE="0666", GROUP="docker"' | sudo tee /etc/udev/rules.d/85-wolf-uinput.rules >/dev/null || true
+    sudo udevadm control --reload-rules 2>/dev/null || true
+    sudo udevadm trigger 2>/dev/null || true
+fi
+sudo chmod 0666 /dev/uinput 2>/dev/null || true
+
+# 5. FUSE user_allow_other para montagens rclone/NTFS
+if [ -f /etc/fuse.conf ] && ! grep -q "^user_allow_other" /etc/fuse.conf; then
+    echo "-> Habilitando user_allow_other em /etc/fuse.conf..."
+    echo "user_allow_other" | sudo tee -a /etc/fuse.conf >/dev/null || true
+fi
+
+# 6. Garantir permissões de execução nos scripts customizados
 echo "-> Ajustando permissões de execução dos scripts..."
 find "${REPO_DIR}/profiles/default/bin" -type f \( -name "*.sh" -o -name "*.py" -o -name "*.AppImage" -o -name "eden" -o -name "ryujinx*" \) -exec chmod +x {} + 2>/dev/null || true
 
-# 4. Gerar /etc/wolf/cfg/config.toml
+# 7. Gerar /etc/wolf/cfg/config.toml
 echo "-> Gerando configuração do Wolf em /etc/wolf/cfg/config.toml..."
 sudo mkdir -p /etc/wolf/cfg
 
@@ -55,9 +75,6 @@ sudo cp "${REPO_DIR}/config.example.toml" "$CONFIG_TARGET"
 sudo sed -i "s|/opt/wolf-data|${WOLF_BASE_DIR}|g" "$CONFIG_TARGET"
 sudo sed -i "s|/home/user/roms-gdrive|${ROMS_DIR}|g" "$CONFIG_TARGET"
 sudo sed -i "s|/mnt/storage/games/steam|${STEAM_LIBRARY_DIR}|g" "$CONFIG_TARGET"
-
-echo "-> Permissões em /dev/uinput..."
-sudo chmod 0666 /dev/uinput 2>/dev/null || true
 
 echo "=== Configuração concluída com sucesso! ==="
 echo "Você já pode iniciar o servidor com:"
