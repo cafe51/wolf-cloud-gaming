@@ -12,8 +12,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:rw
       - /dev/:/dev/:rw
       - /run/udev:/run/udev:rw
-      - /mnt/01D808191FE36330/ubuntu/programas/wolf-data/profiles:/etc/wolf/profile_data:rw
-      - /mnt/01D808191FE36330/ubuntu/programas/wolf-data/state:/var/lib/wolf:rw
+      - ${WOLF_BASE_DIR:-/mnt/01D808191FE36330/ubuntu/programas/wolf-data}/profiles:/etc/wolf/profile_data:rw
+      - ${WOLF_BASE_DIR:-/mnt/01D808191FE36330/ubuntu/programas/wolf-data}/state:/var/lib/wolf:rw
     
     # GPU e dispositivos
     devices:
@@ -26,11 +26,11 @@ services:
     
     # Environment
     environment:
-      - RUST_LOG=info
-      - WOLF_LOG_LEVEL=debug
+      - RUST_LOG=${RUST_LOG:-info}
+      - WOLF_LOG_LEVEL=${WOLF_LOG_LEVEL:-debug}
       - WOLF_DATA_DIR=/var/lib/wolf
       - WOLF_CONFIG_DIR=/etc/wolf/cfg
       - RUST_BACKTRACE=1
-      - WOLF_RENDER_NODE=/dev/dri/renderD128
-      - GAMESCOPE_WIDTH=1920
-      - GAMESCOPE_HEIGHT=1080
+      - WOLF_RENDER_NODE=${WOLF_RENDER_NODE:-/dev/dri/renderD128}
+      - GAMESCOPE_WIDTH=${GAMESCOPE_WIDTH:-1920}
+      - GAMESCOPE_HEIGHT=${GAMESCOPE_HEIGHT:-1080}

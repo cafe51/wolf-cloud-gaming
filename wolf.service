@@ -1,3 +1,7 @@
+# Wolf Cloud Gaming Systemd Service Template
+# NOTA: Ao instalar este serviço em /etc/systemd/system/wolf.service,
+# ajuste 'User' e 'WorkingDirectory' conforme o caminho do seu host.
+
 [Unit]
 Description=Wolf Cloud Gaming Server
 Requires=docker.service
