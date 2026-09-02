@@ -191,17 +191,23 @@ sudo apt install -y mesa-va-drivers gstreamer1.0-vaapi
 
 ### 3. Clonar o Repositório e Configurar Variáveis
 ```bash
-git clone https://github.com/seu-usuario/wolf-cloud-gaming.git
+git clone https://github.com/cafe51/wolf-cloud-gaming.git
 cd wolf-cloud-gaming
 
-# Configurar variáveis de ambiente locais
+# 1. Configurar variáveis de ambiente para o Docker Compose (.env)
 cp .env.example .env
 nano .env
 
-# Criar a configuração ativa do Wolf a partir do exemplo
+# 2. Criar a configuração ativa do Wolf a partir do exemplo
 sudo mkdir -p /etc/wolf/cfg
 cp config.example.toml /etc/wolf/cfg/config.toml
+
+# Caso tenha alterado WOLF_BASE_DIR no .env para um caminho diferente de /opt/wolf-data,
+# ajuste os caminhos no arquivo TOML:
+# sudo sed -i "s|/opt/wolf-data|$WOLF_BASE_DIR|g" /etc/wolf/cfg/config.toml
 ```
+
+> 💡 **Arquitetura de Inicialização (cont-init.d + apt-cache):** Os containers utilizam o padrão `s6-overlay` (`/etc/cont-init.d/`) com diretórios de cache persistentes (`apt-cache`). Isso garante que pacotes como `dolphin-emu` sejam instalados em milissegundos a partir dos `.deb` em cache local montados pelo host, sem necessidade de reconstruir as imagens upstream a cada atualização do sistema.
 
 ### 4. Baixar Imagens Docker
 ```bash

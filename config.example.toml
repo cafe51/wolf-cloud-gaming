@@ -244,7 +244,10 @@ video/x-raw, framerate={fps}/1
         image = 'ghcr.io/games-on-whales/steam:edge'
         mounts = [
             '/opt/wolf-data/profiles/default/steam-data:/home/retro/.steam:rw',
-            '/mnt/storage/games/steam:/mnt/steam-lib:rw'
+            '/mnt/storage/games/steam:/mnt/steam-lib:rw',
+            '/opt/wolf-data/profiles/default/bin/steam-window-manager/init-steam-window-manager.sh:/etc/cont-init.d/95-steam-window-manager.sh:ro',
+            '/opt/wolf-data/profiles/default/bin/steam-window-manager/steam-window-manager.py:/usr/local/bin/steam-window-manager.py:ro',
+            '/opt/wolf-data/profiles/default/bin/steam-window-manager/sway-steam.conf:/home/retro/.config/sway/config.d/steam.conf:ro'
         ]
         name = 'WolfSteam720'
         ports = []
@@ -284,7 +287,10 @@ video/x-raw, framerate={fps}/1
         image = 'ghcr.io/games-on-whales/steam:edge'
         mounts = [
             '/opt/wolf-data/profiles/default/steam-data:/home/retro/.steam:rw',
-            '/mnt/storage/games/steam:/mnt/steam-lib:rw'
+            '/mnt/storage/games/steam:/mnt/steam-lib:rw',
+            '/opt/wolf-data/profiles/default/bin/steam-window-manager/init-steam-window-manager.sh:/etc/cont-init.d/95-steam-window-manager.sh:ro',
+            '/opt/wolf-data/profiles/default/bin/steam-window-manager/steam-window-manager.py:/usr/local/bin/steam-window-manager.py:ro',
+            '/opt/wolf-data/profiles/default/bin/steam-window-manager/sway-steam.conf:/home/retro/.config/sway/config.d/steam.conf:ro'
         ]
         name = 'WolfSteam1080'
         ports = []
@@ -428,7 +434,8 @@ video/x-raw, framerate={fps}/1
             '/opt/wolf-data/profiles/default/bin/squashfs-root:/opt/heroic:ro',
             '/opt/wolf-data/profiles/default/bin/heroic-startup.sh:/opt/gow/startup.sh:rw',
             '/opt/wolf-data/logs:/logs:rw',
-            '/opt/wolf-data/profiles/default/bin/heroic-init.d/10-gamepad-udev.sh:/etc/cont-init.d/10-gamepad-udev.sh:ro'
+            '/opt/wolf-data/profiles/default/bin/heroic-init.d/10-gamepad-udev.sh:/etc/cont-init.d/10-gamepad-udev.sh:ro',
+            '/opt/wolf-data/profiles/default/bin/dolphin-standalone/99-isolate-inputs.sh:/etc/cont-init.d/99-isolate-inputs.sh:ro'
         ]
         name = 'WolfHeroic720'
         ports = []
@@ -468,7 +475,8 @@ video/x-raw, framerate={fps}/1
             '/opt/wolf-data/profiles/default/bin/squashfs-root:/opt/heroic:ro',
             '/opt/wolf-data/profiles/default/bin/heroic-startup.sh:/opt/gow/startup.sh:rw',
             '/opt/wolf-data/logs:/logs:rw',
-            '/opt/wolf-data/profiles/default/bin/heroic-init.d/10-gamepad-udev.sh:/etc/cont-init.d/10-gamepad-udev.sh:ro'
+            '/opt/wolf-data/profiles/default/bin/heroic-init.d/10-gamepad-udev.sh:/etc/cont-init.d/10-gamepad-udev.sh:ro',
+            '/opt/wolf-data/profiles/default/bin/dolphin-standalone/99-isolate-inputs.sh:/etc/cont-init.d/99-isolate-inputs.sh:ro'
         ]
         name = 'WolfHeroic1080'
         ports = []
