@@ -12,8 +12,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:rw
       - /dev/:/dev/:rw
       - /run/udev:/run/udev:rw
-      - ${WOLF_BASE_DIR:-/mnt/01D808191FE36330/ubuntu/programas/wolf-data}/profiles:/etc/wolf/profile_data:rw
-      - ${WOLF_BASE_DIR:-/mnt/01D808191FE36330/ubuntu/programas/wolf-data}/state:/var/lib/wolf:rw
+      - ${WOLF_BASE_DIR:-.}/profiles:/etc/wolf/profile_data:rw
+      - ${WOLF_BASE_DIR:-.}/state:/var/lib/wolf:rw
     
     # GPU e dispositivos
     devices:

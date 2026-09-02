@@ -31,7 +31,7 @@ if [ -d "/home/retro/.config/heroic/apt-cache" ]; then
 fi
 
 # Neutralize Proton dummy steam.exe that causes lsteamclient assertion crash
-PREFIX_DIR="${HEROIC_FALLOUT_PREFIX:-/home/japhe/Games/Heroic/Prefixes/default/Fallout 2 A Post Nuclear Role Playing Game}"
+PREFIX_DIR="${HEROIC_FALLOUT_PREFIX:-$HOME/Games/Heroic/Prefixes/default/Fallout 2 A Post Nuclear Role Playing Game}"
 if [ -d "$PREFIX_DIR" ]; then
   for dir in "$PREFIX_DIR/drive_c/windows/system32" "$PREFIX_DIR/drive_c/windows/syswow64"; do
     if [ -f "$dir/attrib.exe" ]; then
