@@ -1,0 +1,36 @@
+services:
+  wolf:
+    image: ghcr.io/games-on-whales/wolf:stable
+    container_name: wolf
+    restart: unless-stopped
+    network_mode: host
+    privileged: false
+    
+    # Bind mounts
+    volumes:
+      - /etc/wolf/:/etc/wolf:rw
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - /dev/:/dev/:rw
+      - /run/udev:/run/udev:rw
+      - /mnt/01D808191FE36330/ubuntu/programas/wolf-data/profiles:/etc/wolf/profile_data:rw
+      - /mnt/01D808191FE36330/ubuntu/programas/wolf-data/state:/var/lib/wolf:rw
+    
+    # GPU e dispositivos
+    devices:
+      - /dev/dri
+      - /dev/uinput
+      - /dev/uhid
+    
+    device_cgroup_rules:
+      - 'c 13:* rmw'
+    
+    # Environment
+    environment:
+      - RUST_LOG=info
+      - WOLF_LOG_LEVEL=debug
+      - WOLF_DATA_DIR=/var/lib/wolf
+      - WOLF_CONFIG_DIR=/etc/wolf/cfg
+      - RUST_BACKTRACE=1
+      - WOLF_RENDER_NODE=/dev/dri/renderD128
+      - GAMESCOPE_WIDTH=1920
+      - GAMESCOPE_HEIGHT=1080

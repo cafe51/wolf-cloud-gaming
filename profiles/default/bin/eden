@@ -1,0 +1,3 @@
+#!/bin/bash
+# Eden wrapper - chama ryujinx
+exec /usr/local/bin/ryujinx "$@"

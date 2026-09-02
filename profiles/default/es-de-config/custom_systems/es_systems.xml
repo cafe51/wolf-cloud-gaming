@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!-- This is the ES-DE game systems configuration file for Unix -->
+<systemList>
+    <system>
+        <name>Custom Scripts</name>
+        <fullname>Custom Scripts</fullname>
+        <path>/Applications/launchers</path>
+        <extension>.desktop .sh</extension>
+        <command label="Various">%ENABLESHORTCUTS% %EMULATOR_OS-SHELL% %ROM%</command>
+        <platform>pc, pcwindows</platform>
+        <theme>Custom Scripts</theme>
+    </system>
+    <system>
+        <name>gc</name>
+        <fullname>GameCube (Dolphin Standalone)</fullname>
+        <path>/ROMs/gc</path>
+        <extension>.ciso .CISO .dff .DFF .dol .DOL .elf .ELF .gcm .GCM .gcz .GCZ .iso .ISO .json .JSON .m3u .M3U .rvz .RVZ .tgc .TGC .wad .WAD .wbfs .WBFS .wia .WIA</extension>
+        <command label="Dolphin Standalone">/home/retro/dolphin-standalone/run-dolphin.sh -e %ROM%</command>
+        <platform>gc</platform>
+        <theme>gc</theme>
+    </system>
+</systemList>

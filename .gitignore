@@ -1,0 +1,58 @@
+# ==========================================================
+# Wolf Cloud Gaming - .gitignore
+# ==========================================================
+
+# 1. Backups, Estado e Logs
+backups/
+state/
+logs/
+*.log
+*.bak
+*.bak*
+
+# 2. Configurações locais e segredos (contêm certificados e IPs)
+.env
+config.toml
+config-edited.toml
+config-v7-backup.toml
+
+# 3. ROMs, Saves e Mídias
+roms
+roms/
+*.sav
+*.state*
+*.srm
+
+# 4. Dados de Runtime e Autenticação de Apps (Steam, Heroic, RetroArch, etc.)
+profiles/default/steam-data/
+profiles/default/steam-compat/
+profiles/default/steam-overlay/
+profiles/default/heroic-config/
+profiles/default/pcsx2-config/
+profiles/default/retroarch-config/
+profiles/default/retroarch-cores/
+profiles/default/retroarch-system/
+profiles/default/apt-cache/
+
+# 5. Dados dinâmicos do EmulationStation (Temas, mídias e caches)
+profiles/default/es-de-config/themes/
+profiles/default/es-de-config/media/
+profiles/default/es-de-config/gamelists/
+profiles/default/es-de-config/logs/
+profiles/default/es-de-config/scrapers/
+profiles/default/es-de-config/screensavers/
+profiles/default/es-de-config/settings/
+profiles/default/es-de-config/controllers/
+profiles/default/es-de-config/collections/
+profiles/default/es-de-config/inputmanager/
+
+# 6. Binários pesados e pastas descompactadas
+*.deb
+*.iso
+profiles/default/bin/heroic.AppImage
+profiles/default/bin/squashfs-root/
+profiles/default/bin/dolphin-standalone/*.deb
+profiles/default/bin/dolphin-standalone/apt-cache/
+profiles/default/bin/dolphin-standalone/extracted/
+profiles/default/bin/dolphin-standalone/openbox/
+profiles/default/bin/dolphin-standalone/portable/

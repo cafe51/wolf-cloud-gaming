@@ -1,0 +1,13 @@
+#!/bin/bash
+LOG=/home/retro/ryujinx-debug.log
+echo "=== $(date) ===" >> $LOG
+echo "ENV:" >> $LOG
+env >> $LOG
+echo "ARGS: $@" >> $LOG
+echo "PWD: $(pwd)" >> $LOG
+echo "WAYLAND: $WAYLAND_DISPLAY" >> $LOG
+echo "---" >> $LOG
+
+export LD_LIBRARY_PATH=/ryujinx/squashfs-root/usr/lib:$LD_LIBRARY_PATH
+
+exec /ryujinx/squashfs-root/AppRun "$@" 2>> $LOG

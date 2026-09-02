@@ -1,0 +1,11 @@
+#!/bin/bash
+# Wrapper que ignora flags -f -g do Yuzu
+export LD_LIBRARY_PATH=/ryujinx/squashfs-root/usr/lib:$LD_LIBRARY_PATH
+args=()
+for arg in "$@"; do
+    case "$arg" in
+        -f|-g) ;;
+        *) args+=("$arg") ;;
+    esac
+done
+exec /ryujinx/squashfs-root/AppRun "${args[@]}"

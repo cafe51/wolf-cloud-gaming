@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1420 960" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#22d3ee"/>
+    </marker>
+    <linearGradient id="hostBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#0b1120"/>
+    </linearGradient>
+  </defs>
+
+  <!-- fundo -->
+  <rect width="1420" height="960" fill="#020617"/>
+  <g stroke="#1e293b" stroke-width="1" opacity="0.35">
+    <path d="M0 120 H1420 M0 240 H1420 M0 360 H1420 M0 480 H1420 M0 600 H1420 M0 720 H1420 M0 840 H1420"/>
+    <path d="M120 0 V960 M240 0 V960 M360 0 V960 M480 0 V960 M600 0 V960 M720 0 V960 M840 0 V960 M960 0 V960 M1080 0 V960 M1200 0 V960 M1320 0 V960"/>
+  </g>
+
+  <!-- título -->
+  <text x="40" y="46" fill="#e2e8f0" font-size="24" font-weight="700">Japhe Cloud Gaming</text>
+  <text x="40" y="72" fill="#64748b" font-size="14">Arquitetura Wolf (games-on-whales) · Moonlight-compatible · AMD VAAPI · config v7</text>
+
+  <!-- ============ COLUNA 1: CLIENTE ============ -->
+  <rect x="30" y="110" width="280" height="210" rx="12" fill="#0f172a" stroke="#22d3ee" stroke-width="1.5"/>
+  <text x="48" y="140" fill="#22d3ee" font-size="14" font-weight="600">Moonlight Client</text>
+  <text x="48" y="168" fill="#94a3b8" font-size="12">· Celular Android / TV / notebook</text>
+  <text x="48" y="188" fill="#94a3b8" font-size="12">· Pareado no Wolf (certificado)</text>
+  <rect x="48" y="206" width="244" height="46" rx="8" fill="#0b1120" stroke="#1e293b"/>
+  <text x="60" y="224" fill="#e2e8f0" font-size="11">Tailscale (WAN / zero-trust)</text>
+  <text x="60" y="240" fill="#64748b" font-size="11">rede mesh privada</text>
+  <rect x="48" y="258" width="244" height="46" rx="8" fill="#0b1120" stroke="#1e293b"/>
+  <text x="60" y="276" fill="#e2e8f0" font-size="11">LAN local</text>
+  <text x="60" y="292" fill="#64748b" font-size="11">IP direto do host</text>
+
+  <!-- seta cliente <-> host -->
+  <line x1="310" y1="215" x2="368" y2="215" stroke="#22d3ee" stroke-width="2" marker-end="url(#arrow-cyan)" marker-start="url(#arrow-cyan)"/>
+  <text x="312" y="205" fill="#22d3ee" font-size="10">H.264/H.265 + Opus + input</text>
+
+  <!-- ============ COLUNA 2: HOST ============ -->
+  <rect x="370" y="100" width="690" height="790" rx="14" fill="url(#hostBg)" stroke="#334155" stroke-width="2"/>
+  <text x="392" y="130" fill="#e2e8f0" font-size="15" font-weight="700">PC Host — Ubuntu 26.04.1 · RX 580 2048SP</text>
+  <text x="392" y="150" fill="#64748b" font-size="11">Docker 29.1.3 · rede host · kernel 7.0.0</text>
+
+  <!-- Wolf container -->
+  <rect x="392" y="168" width="330" height="196" rx="10" fill="#0b1120" stroke="#34d399" stroke-width="1.5"/>
+  <text x="410" y="192" fill="#34d399" font-size="13" font-weight="600">wolf:stable</text>
+  <text x="410" y="212" fill="#94a3b8" font-size="11">engine de streaming (substitui Sunshine)</text>
+  <text x="410" y="236" fill="#e2e8f0" font-size="11">· GStreamer H.264/H.265 (VAAPI)</text>
+  <text x="410" y="254" fill="#e2e8f0" font-size="11">· Áudio Opus CBR (interpipe)</text>
+  <text x="410" y="272" fill="#e2e8f0" font-size="11">· Gamepad virtual (uhid/uinput)</text>
+  <text x="410" y="290" fill="#e2e8f0" font-size="11">· Sessões + spawn de containers</text>
+  <text x="410" y="312" fill="#64748b" font-size="10">WOLF_RENDER_NODE=/dev/dri/renderD128</text>
+  <text x="410" y="330" fill="#64748b" font-size="10">lê /etc/wolf/cfg/config.toml</text>
+
+  <!-- PulseAudio -->
+  <rect x="740" y="168" width="298" height="96" rx="10" fill="#0b1120" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="758" y="192" fill="#fbbf24" font-size="13" font-weight="600">pulseaudio:master</text>
+  <text x="758" y="214" fill="#94a3b8" font-size="11">áudio dos apps</text>
+  <text x="758" y="234" fill="#94a3b8" font-size="11">PULSE_SERVER=unix:/run/user/wolf/pulse-socket</text>
+
+  <!-- seta wolf <-> pulse -->
+  <line x1="722" y1="216" x2="740" y2="216" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- app containers -->
+  <text x="392" y="392" fill="#94a3b8" font-size="12" font-weight="600">App containers (spawn sob demanda · Sway/Wayland)</text>
+
+  <rect x="392" y="404" width="160" height="150" rx="10" fill="#0b1120" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="404" y="426" fill="#a78bfa" font-size="12" font-weight="600">Steam (720/1080)</text>
+  <text x="404" y="446" fill="#94a3b8" font-size="10">steam:edge</text>
+  <text x="404" y="466" fill="#e2e8f0" font-size="10">Steam + Proton</text>
+  <text x="404" y="482" fill="#64748b" font-size="9">Proton host (ro)</text>
+  <text x="404" y="498" fill="#64748b" font-size="9">steam-window-manager</text>
+  <text x="404" y="514" fill="#64748b" font-size="9">gamescope (UE4 fix)</text>
+
+  <rect x="568" y="404" width="160" height="150" rx="10" fill="#0b1120" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="580" y="426" fill="#a78bfa" font-size="12" font-weight="600">ES-DE (720/1080)</text>
+  <text x="580" y="446" fill="#94a3b8" font-size="10">es-de:edge</text>
+  <text x="580" y="466" fill="#e2e8f0" font-size="10">RetroArch (16 cores)</text>
+  <text x="580" y="482" fill="#e2e8f0" font-size="10">Dolphin standalone</text>
+  <text x="580" y="498" fill="#e2e8f0" font-size="10">Ryujinx (Switch)</text>
+  <text x="580" y="514" fill="#e2e8f0" font-size="10">PCSX2</text>
+
+  <rect x="744" y="404" width="160" height="150" rx="10" fill="#0b1120" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="756" y="426" fill="#a78bfa" font-size="12" font-weight="600">Heroic (720/1080)</text>
+  <text x="756" y="446" fill="#94a3b8" font-size="10">xfce:edge</text>
+  <text x="756" y="466" fill="#e2e8f0" font-size="10">Epic/GOG/Amazon</text>
+  <text x="756" y="482" fill="#64748b" font-size="9">Heroic extraído</text>
+  <text x="756" y="498" fill="#64748b" font-size="9">--ozone-platform=wayland</text>
+
+  <rect x="920" y="404" width="120" height="150" rx="10" fill="#0b1120" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="932" y="426" fill="#a78bfa" font-size="12" font-weight="600">Wolf UI</text>
+  <text x="932" y="446" fill="#94a3b8" font-size="10">wolf-ui:main</text>
+  <text x="932" y="466" fill="#e2e8f0" font-size="10">gestão web</text>
+
+  <!-- Docker engine -->
+  <rect x="392" y="576" width="648" height="86" rx="10" fill="#0b1120" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="410" y="600" fill="#94a3b8" font-size="12" font-weight="600">Docker Engine (containerd image store)</text>
+  <text x="410" y="622" fill="#e2e8f0" font-size="11">network_mode: host · privileged · /dev/dri /dev/uinput /dev/uhid · cgroup c 13:*</text>
+  <text x="410" y="642" fill="#64748b" font-size="10">/dev do container é tmpfs isolado (não compartilha inodes com o host)</text>
+
+  <!-- isolamento de input -->
+  <rect x="392" y="678" width="648" height="86" rx="10" fill="#0b1120" stroke="#fb7185" stroke-width="1.5"/>
+  <text x="410" y="702" fill="#fb7185" font-size="12" font-weight="600">Isolamento de gamepads físicos</text>
+  <text x="410" y="722" fill="#e2e8f0" font-size="11">host: 85-wolf-virtual-inputs.rules (pads virtuais → ID_SEAT=seat9)</text>
+  <text x="410" y="742" fill="#64748b" font-size="10">container: 99-isolate-inputs.sh (whitelist "Wolf*" · bloqueia Xbox 360 físico)</text>
+
+  <!-- sistema -->
+  <rect x="392" y="780" width="648" height="86" rx="10" fill="#0b1120" stroke="#1e293b" stroke-width="1.5"/>
+  <text x="410" y="804" fill="#94a3b8" font-size="12" font-weight="600">Orquestração</text>
+  <text x="410" y="824" fill="#e2e8f0" font-size="11">systemd wolf.service → docker compose up/down · /etc/wolf/cfg/config.toml (v7)</text>
+  <text x="410" y="844" fill="#64748b" font-size="10">wolf-data/ = profiles (apps), backups, logs, state, roms (symlink)</text>
+
+  <!-- seta wolf -> app containers -->
+  <line x1="557" y1="364" x2="472" y2="404" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="566" y="378" fill="#34d399" font-size="10">spawn/gerencia</text>
+
+  <!-- ============ COLUNA 3: ARMAZENAMENTO ============ -->
+  <rect x="1090" y="110" width="290" height="150" rx="12" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="1108" y="138" fill="#fbbf24" font-size="13" font-weight="600">Google Drive (5 TB)</text>
+  <text x="1108" y="160" fill="#94a3b8" font-size="11">gdrive:jogos/ROMs</text>
+  <text x="1108" y="182" fill="#e2e8f0" font-size="11">rclone (FUSE) → /ROMs/</text>
+  <text x="1108" y="202" fill="#64748b" font-size="10">sistemas: gc, n3ds, ps2, psx, switch</text>
+  <text x="1108" y="222" fill="#64748b" font-size="10">rclone-roms.service (Before=docker)</text>
+
+  <rect x="1090" y="280" width="290" height="130" rx="12" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="1108" y="308" fill="#fbbf24" font-size="13" font-weight="600">HDD NTFS</text>
+  <text x="1108" y="330" fill="#94a3b8" font-size="11">/mnt/01D808191FE36330</text>
+  <text x="1108" y="352" fill="#e2e8f0" font-size="11">jogos/ (PCSX2, Dolphin, Ryujinx)</text>
+  <text x="1108" y="372" fill="#e2e8f0" font-size="11">wolf-data/ (profiles, backups)</text>
+  <text x="1108" y="392" fill="#64748b" font-size="10">ntfs-3g/FUSE — sem overlay2</text>
+
+  <rect x="1090" y="430" width="290" height="130" rx="12" fill="#0f172a" stroke="#fbbf24" stroke-width="1.5"/>
+  <text x="1108" y="458" fill="#fbbf24" font-size="13" font-weight="600">SSD (sistema)</text>
+  <text x="1108" y="480" fill="#94a3b8" font-size="11">~/.steam/debian-installation</text>
+  <text x="1108" y="502" fill="#e2e8f0" font-size="11">Proton 7/9/10 (bind ro)</text>
+  <text x="1108" y="522" fill="#e2e8f0" font-size="11">userdata, compat tools</text>
+  <text x="1108" y="542" fill="#64748b" font-size="10">sem duplicar no container</text>
+
+  <!-- setas armazenamento -> host -->
+  <line x1="1090" y1="185" x2="1040" y2="185" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="1090" y1="345" x2="1040" y2="345" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="1090" y1="495" x2="1040" y2="495" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="1050" y="580" fill="#64748b" font-size="9" transform="rotate(-90 1050 580)">bind mounts → containers</text>
+
+  <!-- legenda -->
+  <rect x="30" y="360" width="280" height="180" rx="12" fill="#0f172a" stroke="#1e293b"/>
+  <text x="48" y="388" fill="#94a3b8" font-size="12" font-weight="600">Legenda</text>
+  <rect x="48" y="402" width="12" height="12" fill="#22d3ee"/><text x="68" y="412" fill="#e2e8f0" font-size="11">Cliente / stream</text>
+  <rect x="48" y="424" width="12" height="12" fill="#34d399"/><text x="68" y="434" fill="#e2e8f0" font-size="11">Wolf (engine)</text>
+  <rect x="48" y="446" width="12" height="12" fill="#a78bfa"/><text x="68" y="456" fill="#e2e8f0" font-size="11">App containers</text>
+  <rect x="48" y="468" width="12" height="12" fill="#fbbf24"/><text x="68" y="478" fill="#e2e8f0" font-size="11">Áudio / armazenamento</text>
+  <rect x="48" y="490" width="12" height="12" fill="#fb7185"/><text x="68" y="500" fill="#e2e8f0" font-size="11">Isolamento de input</text>
+</svg>

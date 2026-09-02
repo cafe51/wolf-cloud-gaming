@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<systemList>
+    <system>
+        <name>switch</name>
+        <fullname>Nintendo Switch</fullname>
+        <path>/ROMs/switch</path>
+        <extension>.nsp .NSP .xci .XCI .nso .NSO .nro .NRO</extension>
+        <command label="Ryujinx (Standalone)">/usr/local/bin/ryujinx %ROM%</command>
+        <platform>switch</platform>
+        <theme>switch</theme>
+    </system>
+</systemList>

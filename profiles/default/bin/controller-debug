@@ -1,0 +1,37 @@
+#!/bin/bash
+LOG=/home/retro/controller-debug.log
+echo "=== $(date) ===" > $LOG
+
+echo "--- INPUT DEVICES ---" >> $LOG
+for d in /dev/input/event*; do
+    name=$(cat /sys/class/input/$(basename $d)/device/name 2>/dev/null)
+    major=$(stat -c "0x%t" $d 2>/dev/null)
+    echo "  $d (major=$major): $name" >> $LOG
+done
+
+echo "--- JS DEVICES ---" >> $LOG
+ls -la /dev/input/js* >> $LOG 2>&1
+
+echo "--- SDL2 TEST ---" >> $LOG
+python3 -c "
+import os, ctypes
+os.environ['SDL_VIDEODRIVER'] = 'dummy'
+try:
+    sdl = ctypes.CDLL('libSDL2-2.0.so.0')
+    sdl.SDL_Init(0x200)
+    num = sdl.SDL_NumJoysticks()
+    print(f'Joysticks: {num}')
+    for i in range(num):
+        name_ptr = sdl.SDL_JoystickNameForIndex(i)
+        name = ctypes.c_char_p(name_ptr).value.decode() if name_ptr else 'NULL'
+        print(f'  [{i}]: {name}')
+    sdl.SDL_Quit()
+except Exception as e:
+    print(f'ERROR: {e}')
+" >> $LOG 2>&1
+
+echo "--- UDEV TEST ---" >> $LOG
+/usr/bin/fake-udev trigger 2>&1 >> $LOG
+
+echo "Debug completo: $LOG"
+cat $LOG
