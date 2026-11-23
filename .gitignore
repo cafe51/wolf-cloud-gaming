@@ -15,6 +15,7 @@ logs/
 config.toml
 config-edited.toml
 config-v7-backup.toml
+*.local.md
 
 # 3. ROMs, Saves e Mídias
 roms

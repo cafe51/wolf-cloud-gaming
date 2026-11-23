@@ -10,20 +10,25 @@
 [Unit]
 Description=Wolf Cloud Gaming Server
 Requires=docker.service
-After=docker.service network-online.target
+After=docker.service network-online.target local-fs.target
 Wants=network-online.target
+RequiresMountsFor=/mnt/01D808191FE36330
 
 [Service]
 Type=oneshot
 RemainAfterExit=true
-User=YOUR_USERNAME
+User=japhe
 Group=docker
-WorkingDirectory=/opt/wolf-cloud-gaming
-ExecStart=/usr/bin/docker compose up -d
+WorkingDirectory=/mnt/01D808191FE36330/ubuntu/programas/wolf-data
+# Limpeza preventiva de qualquer estado fantasma/morto
+ExecStartPre=-/usr/bin/docker compose down
+ExecStart=/usr/bin/docker compose up -d --force-recreate
 ExecStop=/usr/bin/docker compose down
 ExecReload=/usr/bin/docker compose restart
 Restart=on-failure
 RestartSec=10
+TimeoutStartSec=120
+TimeoutStopSec=30
 
 [Install]
 WantedBy=multi-user.target

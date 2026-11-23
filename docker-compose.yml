@@ -2,7 +2,7 @@ services:
   wolf:
     image: ghcr.io/games-on-whales/wolf:stable
     container_name: wolf
-    restart: unless-stopped
+    restart: "no"
     network_mode: host
     privileged: false
     
