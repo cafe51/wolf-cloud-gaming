@@ -9,8 +9,9 @@ Referência arquitetural para agentes e manutenção do stack. Para valores conc
 - **Multi-seat virtual sob demanda:** em vez de espelhar o desktop físico do host, o Wolf sobe containers Docker efêmeros com compositor **Wayland/Sway** e servidor **PulseAudio** dedicados por sessão Moonlight.
 - **Host local como fonte de verdade:** o ambiente rodando na máquina local é a referência funcional. O repositório Git atua como backup de código/documentação e vitrine pública com templates sanitizados.
 - **Ciclo de vida:**
-  - `docker-compose.yml` define o serviço principal `wolf` (`network_mode: host`, acesso a `/var/run/docker.sock`, `/etc/wolf`, `/dev/dri`, `/dev/uinput`, `/dev/uhid` e cgroup `c 13:* rmw`).
-  - Em produção com `systemd` (`wolf.service`), prefere-se `restart: "no"` no compose para deixar o `systemd` ordenar a subida após a montagem de discos secundários (`RequiresMountsFor`) e limpar containers órfãos (`ExecStartPre`).
+  - `docker-compose.yml` define o serviço principal `wolf` (`network_mode: host`, acesso a `/var/run/docker.sock`, `/etc/wolf`, `/etc/wolf/sockets:/run/user/wolf`, `/dev/dri`, `/dev/uinput`, `/dev/uhid`, cgroup `c 13:* rmw` e rotação de logs `json-file` `20m` × `3`).
+  - O bind mount `/etc/wolf/sockets:/run/user/wolf` evita a criação de volumes Docker anônimos a cada reinício e expõe um caminho previsível para o socket da API (`wolf.sock`, montado em `/var/run/wolf` no container `Wolf-UI`). O estado dos apps fica em `/etc/wolf` (via `HOST_APPS_STATE_FOLDER`), dispensando `state/` / `WOLF_DATA_DIR`.
+  - Em produção com `systemd` (`wolf.service`), mantém-se `restart: "no"` no compose para o `dockerd` nunca subir o Wolf antes da montagem de discos secundários (`RequiresMountsFor`), combinado com `Type=simple` no `systemd` (`docker compose up --force-recreate --remove-orphans --abort-on-container-exit --exit-code-from wolf` + `Restart=on-failure`), garantindo ordenação segura no boot **e** recuperação automática em caso de crash.
 
 ---
 
@@ -38,7 +39,7 @@ Placeholders substituídos automaticamente pelo `setup.sh` ao gerar `/etc/wolf/c
   - **VAAPI (`va`):** `vah264enc`, `vah265enc`, `vaav1enc` + `vapostproc` (prioritário em GPUs AMD/Intel via `WOLF_RENDER_NODE`, padrão `/dev/dri/renderD128`).
   - **NVIDIA (`nvcodec`):** `nvh264enc`, `nvh265enc`, `nvav1enc`.
   - **Intel QSV (`qsv`):** `qsvh264enc`, `qsvh265enc`, `qsvav1enc`.
-  - **Software fallback:** `x264enc`, `x265enc`, `av1enc`.
+  - **Software fallback:** `x264enc`, `x265enc` *(o fallback `av1enc`/`aom` em software foi removido intencionalmente para impedir que clientes Moonlight negociem AV1 por CPU em GPUs sem encoder AV1 em hardware)*.
 - O Wolf testa `check_elements` na subida e ignora automaticamente encoders incompatíveis com a GPU presente.
 
 ---

@@ -9,11 +9,18 @@ services:
     # Bind mounts
     volumes:
       - /etc/wolf/:/etc/wolf:rw
+      - /etc/wolf/sockets:/run/user/wolf:rw
       - /var/run/docker.sock:/var/run/docker.sock:rw
       - /dev/:/dev/:rw
       - /run/udev:/run/udev:rw
       - ${WOLF_BASE_DIR:-.}/profiles:/etc/wolf/profile_data:rw
-      - ${WOLF_BASE_DIR:-.}/state:/var/lib/wolf:rw
+    
+    # Rotação de logs Docker para evitar crescimento ilimitado no SSD raiz
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
     
     # GPU e dispositivos
     devices:
@@ -27,8 +34,7 @@ services:
     # Environment
     environment:
       - RUST_LOG=${RUST_LOG:-info}
-      - WOLF_LOG_LEVEL=${WOLF_LOG_LEVEL:-debug}
-      - WOLF_DATA_DIR=/var/lib/wolf
+      - WOLF_LOG_LEVEL=${WOLF_LOG_LEVEL:-info}
       - WOLF_CONFIG_DIR=/etc/wolf/cfg
       - RUST_BACKTRACE=1
       - WOLF_RENDER_NODE=${WOLF_RENDER_NODE:-/dev/dri/renderD128}
