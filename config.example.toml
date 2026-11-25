@@ -196,52 +196,9 @@ video/x-raw, framerate={fps}/1
 '''
 
     [[profiles.apps]]
-    icon_png_path = '/etc/wolf/profile_data/default/icons/steam_720p.png'
-    start_virtual_compositor = true
-    title = 'Steam (720p)'
-
-        [profiles.apps.runner]
-        base_create_json = '''{
-  "HostConfig": {
-    "IpcMode": "host",
-    "CapAdd": ["SYS_ADMIN", "SYS_NICE", "SYS_PTRACE", "NET_RAW", "MKNOD", "NET_ADMIN"],
-    "SecurityOpt": ["seccomp=unconfined", "apparmor=unconfined"],
-    "Ulimits": [{"Name":"nofile", "Hard":10240, "Soft":10240}],
-    "Privileged": true,
-    "DeviceCgroupRules": ["c 13:* rmw", "c 244:* rmw", "c 10:229 rwm"]
-  }
-}
-'''
-        devices = []
-        env = [
-            'WIDTH=1280',
-            'HEIGHT=720',
-            'CLIENT_WIDTH=1280',
-            'CLIENT_HEIGHT=720',
-            'GAMESCOPE_WIDTH=1280',
-            'GAMESCOPE_HEIGHT=720',
-            'PROTON_LOG=1',
-            'RUN_SWAY=true',
-            'TZ=America/Sao_Paulo',
-            'SDL_GAMECONTROLLERCONFIG=030015655e040000ea02000008040000,Wolf X-Box One (virtual) pad,platform:Linux,a:b0,b:b1,x:b2,y:b3,back:b6,start:b7,guide:b8,leftstick:b9,rightstick:b10,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpright:h0.2,dpdown:h0.4,dpleft:h0.8,leftx:a0,lefty:a1,rightx:a3,righty:a4,lefttrigger:a2,righttrigger:a5',
-            'GOW_REQUIRED_DEVICES=/dev/input/* /dev/dri/*'
-        ]
-        image = 'ghcr.io/games-on-whales/steam:edge'
-        mounts = [
-            '/opt/wolf-data/profiles/default/steam-data:/home/retro/.steam:rw',
-            '/mnt/storage/games/steam:/mnt/steam-lib:rw',
-            '/opt/wolf-data/profiles/default/bin/steam-window-manager/init-steam-window-manager.sh:/etc/cont-init.d/95-steam-window-manager.sh:ro',
-            '/opt/wolf-data/profiles/default/bin/steam-window-manager/steam-window-manager.py:/usr/local/bin/steam-window-manager.py:ro',
-            '/opt/wolf-data/profiles/default/bin/steam-window-manager/sway-steam.conf:/home/retro/.config/sway/config.d/steam.conf:ro'
-        ]
-        name = 'WolfSteam720'
-        ports = []
-        type = 'docker'
-
-    [[profiles.apps]]
     icon_png_path = '/etc/wolf/profile_data/default/icons/steam_1080p.png'
     start_virtual_compositor = true
-    title = 'Steam (1080p)'
+    title = 'Steam'
 
         [profiles.apps.runner]
         base_create_json = '''{
@@ -249,7 +206,7 @@ video/x-raw, framerate={fps}/1
     "IpcMode": "host",
     "CapAdd": ["SYS_ADMIN", "SYS_NICE", "SYS_PTRACE", "NET_RAW", "MKNOD", "NET_ADMIN"],
     "SecurityOpt": ["seccomp=unconfined", "apparmor=unconfined"],
-    "Ulimits": [{"Name":"nofile", "Hard":10240, "Soft":10240}],
+    "Ulimits": [{"Name":"nofile", "Hard":524288, "Soft":524288}],
     "Privileged": true,
     "DeviceCgroupRules": ["c 13:* rmw", "c 244:* rmw", "c 10:229 rwm"]
   }
@@ -257,13 +214,6 @@ video/x-raw, framerate={fps}/1
 '''
         devices = []
         env = [
-            'WIDTH=1920',
-            'HEIGHT=1080',
-            'CLIENT_WIDTH=1920',
-            'CLIENT_HEIGHT=1080',
-            'GAMESCOPE_WIDTH=1920',
-            'GAMESCOPE_HEIGHT=1080',
-            'PROTON_LOG=1',
             'RUN_SWAY=true',
             'TZ=America/Sao_Paulo',
             'SDL_GAMECONTROLLERCONFIG=030015655e040000ea02000008040000,Wolf X-Box One (virtual) pad,platform:Linux,a:b0,b:b1,x:b2,y:b3,back:b6,start:b7,guide:b8,leftstick:b9,rightstick:b10,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpright:h0.2,dpdown:h0.4,dpleft:h0.8,leftx:a0,lefty:a1,rightx:a3,righty:a4,lefttrigger:a2,righttrigger:a5',
@@ -271,13 +221,14 @@ video/x-raw, framerate={fps}/1
         ]
         image = 'ghcr.io/games-on-whales/steam:edge'
         mounts = [
-            '/opt/wolf-data/profiles/default/steam-data:/home/retro/.steam:rw',
-            '/mnt/storage/games/steam:/mnt/steam-lib:rw',
-            '/opt/wolf-data/profiles/default/bin/steam-window-manager/init-steam-window-manager.sh:/etc/cont-init.d/95-steam-window-manager.sh:ro',
+            '/opt/wolf-data/profiles/default/bin/steam-window-manager/init-steam-window-manager.sh:/etc/cont-init.d/98-steam-window-manager.sh:ro',
             '/opt/wolf-data/profiles/default/bin/steam-window-manager/steam-window-manager.py:/usr/local/bin/steam-window-manager.py:ro',
-            '/opt/wolf-data/profiles/default/bin/steam-window-manager/sway-steam.conf:/home/retro/.config/sway/config.d/steam.conf:ro'
+            '/opt/wolf-data/profiles/default/bin/steam-window-manager/sway-steam.conf:/etc/sway/config.d/98-steam-window-manager.conf:ro',
+            '/opt/wolf-data/profiles/default/bin/dolphin-standalone/99-isolate-inputs.sh:/etc/cont-init.d/99-isolate-inputs.sh:ro',
+            '/opt/wolf-data/profiles/default/steam-data:/home/retro/.steam:rw',
+            '/mnt/storage/games/steam/steamapps:/home/retro/.steam/steam/steamapps:rw'
         ]
-        name = 'WolfSteam1080'
+        name = 'WolfSteam'
         ports = []
         type = 'docker'
 

@@ -39,11 +39,12 @@ Documentação técnica dos scripts e daemons mantidos em `profiles/default/bin/
 
 ## 3. Steam Window Manager (`profiles/default/bin/steam-window-manager/`)
 
-- **Motivação:** no Sway, jogos rodando via Proton/Wine/Gamescope frequentemente perdiam foco, abriam em split screen ou ficavam atrás do Steam Big Picture.
-- **Arquivos montados nos containers Steam (720p e 1080p):**
-  - `sway-steam.conf`: força `workspace_layout tabbed`, aplica `fullscreen enable, focus` para `steam_app_*`, `wine*` e `proton*`, e mantém janelas `dialog`/`utility`/`notification` do Steam como `floating`.
-  - `init-steam-window-manager.sh`: inicia o daemon como usuário `retro` usando `SWAYSOCK=/run/user/wolf/sway.socket` (log em `/tmp/steam-window-manager.log`).
-  - `steam-window-manager.py`: assina eventos IPC do Sway (`window`, `workspace`) com checagem periódica a cada 2s; prioriza e força foco + tela cheia na janela de jogo ativa, ou garante foco no Steam Big Picture quando não há jogo aberto.
+- **Motivação:** no Sway, jogos rodando via Proton/Wine/Gamescope ou lançados por atalhos do Heroic (`--no-gui`) frequentemente perdiam foco, abriam em split screen ou ficavam atrás do Steam Big Picture.
+- **Arquivos montados no container consolidado `Steam` (`WolfSteam`, resolução dinâmica controlada pelo Moonlight):**
+  - `sway-steam.conf` (`/etc/sway/config.d/98-steam-window-manager.conf:ro`): força `workspace_layout tabbed`, aplica `fullscreen enable, focus` para `steam_app_*`, `wine*` e `proton*`, e mantém janelas `dialog`/`utility`/`notification` do Steam como `floating`.
+  - `init-steam-window-manager.sh` (`/etc/cont-init.d/98-steam-window-manager.sh:ro`): inicia o daemon como usuário `retro` usando `SWAYSOCK=/run/user/wolf/sway.socket` (log em `/tmp/steam-window-manager.log`).
+  - `steam-window-manager.py` (`/usr/local/bin/steam-window-manager.py:ro`): assina eventos IPC do Sway (`window`, `workspace`) com `wait()` + backoff de 1,5s na reconexão (sem zumbis/CPU spin). Classifica apenas janelas reais de jogo (`steam_app_*`, `gamescope`, `wine*`/`proton*`, `*.exe`), ignorando diálogos/popups/transientes e respeitando o foco quando o usuário alterna para o Steam Big Picture/Overlay (só prioriza novas janelas de jogo ou recupera foco quando nenhuma janela está focada).
+- **Biblioteca única e limites:** `/mnt/storage/games/steam/steamapps` é montado diretamente em `/home/retro/.steam/steam/steamapps:rw` (eliminando escolha duplicada de pasta na instalação), com `nofile=524288` para Esync/Proton e `PROTON_LOG` desativado globalmente (ativar por jogo apenas quando depurar).
 - **Pitfall Unreal Engine / Proton (swapchain travado em fullscreen exclusivo):** usar Gamescope nas opções de lançamento do jogo na Steam: `gamescope -w 1280 -h 720 -r 60 -f -- %command%`.
 
 ---
