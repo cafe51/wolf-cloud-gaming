@@ -6,11 +6,12 @@ Documentação técnica dos scripts e daemons mantidos em `profiles/default/bin/
 
 ## 1. Isolamento de Inputs (`profiles/default/bin/dolphin-standalone/99-isolate-inputs.sh`)
 
-- **Escopo real:** apesar de estar na pasta `dolphin-standalone/`, este script é montado em `/etc/cont-init.d/99-isolate-inputs.sh:ro` nos containers **Steam, EmulationStation e Heroic**. Qualquer alteração nele impacta todos esses apps.
+- **Escopo real:** apesar de estar na pasta `dolphin-standalone/`, este script é montado em `/etc/cont-init.d/99-isolate-inputs.sh:ro` nos containers **Steam, EmulationStation e Heroic** (executado via `source` pelo `/entrypoint.sh` como `root`, com `set -e` ativo). Qualquer alteração nele impacta todos esses apps.
 - **O que faz:**
-  1. Aplica isolamento imediato no boot do container e sobe um daemon em background (loop de 1s) monitorando `/dev/input/js*` e `/dev/input/event*`.
-  2. **Whitelist (`*Wolf*` / `*wolf*`):** libera com `chmod 0777` e gera metadados udev em `/run/udev/data/c13:<minor>` simulando Xbox One Controller (`045e:02ea`) para manter o controle virtual do Moonlight como Player 1.
-  3. **Demais joysticks/gamepads físicos do host:** bloqueia com `chmod 000` dentro do container para evitar roubo de slot ou inputs cruzados.
+  1. Aplica isolamento imediato no boot do container e sobe um **daemon único** (`--isolate-inputs-daemon`, protegido por PID file `/run/isolate-inputs.pid`) monitorando `/dev/input/js*` e `/dev/input/event*` a cada 1s.
+  2. **Gamepads virtuais do Wolf:** aplica `chmod 0666` e gera metadados udev em `/run/udev/data/c<major>:<minor>` lendo `major:minor` **em decimal** direto de `/sys/class/input/<dev>/dev` (perfil Xbox One `045e:02ea` para pads Xbox; metadados genéricos de joystick para PS5/Nintendo). Dispositivos virtuais do Wolf que não são gamepads (`mouse`, `keyboard`, `touch`, `motion sensors`) são preservados intactos.
+  3. **Controles virtuais do Steam Input (`/sys/devices/virtual/*`):** liberados com `0666` e metadados udev mínimos quando ausentes, sem nunca serem bloqueados.
+  4. **Joysticks/gamepads físicos do host (fora de `/sys/devices/virtual/*`):** bloqueados dentro do container com `chmod 000` para evitar roubo de slot ou inputs cruzados (sem afetar teclados/mouses).
 
 ---
 
@@ -56,7 +57,7 @@ Documentação técnica dos scripts e daemons mantidos em `profiles/default/bin/
   - Aguarda o gamepad virtual em `/dev/input/js*`, cria/atualiza entradas udev e mantém um loop a cada 3s reaplicando permissões enquanto o Heroic estiver ativo.
   - Inicia `/opt/heroic/heroic` em **Wayland nativo** (`GDK_BACKEND=wayland`, `QT_QPA_PLATFORM=wayland`, `unset DISPLAY`, `--no-sandbox --ozone-platform=wayland --enable-features=UseOzonePlatform,WaylandWindowDecorations --remote-debugging-port=9222`).
 - **`heroic-init.d/10-gamepad-udev.sh` (`/etc/cont-init.d/10-gamepad-udev.sh:ro`):**
-  - Configura metadados udev do pad Wolf, executa `99-isolate-inputs.sh` se presente, instala libs `i386` de `/home/retro/.config/heroic/apt-cache/*.deb` (se existir) e inclui patch opcional para neutralizar `steam.exe` dummy em prefixos Proton clássicos.
+  - Instala libs `i386` de `/home/retro/.config/heroic/apt-cache/*.deb` (se existir) e aplica o patch opcional para neutralizar `steam.exe` dummy em prefixos Proton clássicos (buscando `HEROIC_FALLOUT_PREFIX` ou `/home/*/Games/Heroic/Prefixes/default/...`). O isolamento de inputs e metadados udev dos controles fica centralizado exclusivamente em `99-isolate-inputs.sh`.
 
 ---
 
