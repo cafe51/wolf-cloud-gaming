@@ -4,6 +4,12 @@ set -e
 
 echo "[SteamWindowManager] Inicializando configurações de foco e tela cheia..."
 
+# Sincroniza /etc/localtime e /etc/timezone com TZ (pressure-vessel/steamwebhelper leem esses arquivos)
+if [ -n "${TZ:-}" ] && [ -f "/usr/share/zoneinfo/${TZ}" ]; then
+  ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime
+  printf '%s\n' "${TZ}" > /etc/timezone
+fi
+
 # Garante permissões de execução
 chmod +x /usr/local/bin/steam-window-manager.py 2>/dev/null || true
 

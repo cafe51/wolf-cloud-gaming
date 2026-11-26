@@ -42,7 +42,7 @@ Documentação técnica dos scripts e daemons mantidos em `profiles/default/bin/
 - **Motivação:** no Sway, jogos rodando via Proton/Wine/Gamescope ou lançados por atalhos do Heroic (`--no-gui`) frequentemente perdiam foco, abriam em split screen ou ficavam atrás do Steam Big Picture.
 - **Arquivos montados no container consolidado `Steam` (`WolfSteam`, resolução dinâmica controlada pelo Moonlight):**
   - `sway-steam.conf` (`/etc/sway/config.d/98-steam-window-manager.conf:ro`): força `workspace_layout tabbed`, aplica `fullscreen enable, focus` para `steam_app_*`, `wine*` e `proton*`, e mantém janelas `dialog`/`utility`/`notification` do Steam como `floating`.
-  - `init-steam-window-manager.sh` (`/etc/cont-init.d/98-steam-window-manager.sh:ro`): inicia o daemon como usuário `retro` usando `SWAYSOCK=/run/user/wolf/sway.socket` (log em `/tmp/steam-window-manager.log`).
+  - `init-steam-window-manager.sh` (`/etc/cont-init.d/98-steam-window-manager.sh:ro`): sincroniza `/etc/localtime` e `/etc/timezone` a partir de `TZ` (necessário para o sandbox `pressure-vessel`/`steamwebhelper` exibir o horário local correto) e inicia o daemon como usuário `retro` usando `SWAYSOCK=/run/user/wolf/sway.socket` (log em `/tmp/steam-window-manager.log`).
   - `steam-window-manager.py` (`/usr/local/bin/steam-window-manager.py:ro`): assina eventos IPC do Sway (`window`, `workspace`) com `wait()` + backoff de 1,5s na reconexão (sem zumbis/CPU spin). Classifica apenas janelas reais de jogo (`steam_app_*`, `gamescope`, `wine*`/`proton*`, `*.exe`), ignorando diálogos/popups/transientes e respeitando o foco quando o usuário alterna para o Steam Big Picture/Overlay (só prioriza novas janelas de jogo ou recupera foco quando nenhuma janela está focada).
 - **Biblioteca única e limites:** `/mnt/storage/games/steam/steamapps` é montado diretamente em `/home/retro/.steam/steam/steamapps:rw` (eliminando escolha duplicada de pasta na instalação), com `nofile=524288` para Esync/Proton e `PROTON_LOG` desativado globalmente (ativar por jogo apenas quando depurar).
 - **Pitfall Unreal Engine / Proton (swapchain travado em fullscreen exclusivo):** usar Gamescope nas opções de lançamento do jogo na Steam: `gamescope -w 1280 -h 720 -r 60 -f -- %command%`.
@@ -51,14 +51,18 @@ Documentação técnica dos scripts e daemons mantidos em `profiles/default/bin/
 
 ## 4. Heroic Games Launcher (`profiles/default/bin/heroic-startup.sh` e `heroic-init.d/`)
 
-- **Container base:** `ghcr.io/games-on-whales/xfce:edge`.
-- **Execução sem FUSE:** o AppImage do Heroic deve estar extraído em `profiles/default/bin/squashfs-root` (ignorado pelo Git) e montado em `/opt/heroic:ro`.
-- **`heroic-startup.sh` (`/opt/gow/startup.sh`):**
-  - Registra logs em `/logs/heroic.log`.
-  - Aguarda o gamepad virtual em `/dev/input/js*`, cria/atualiza entradas udev e mantém um loop a cada 3s reaplicando permissões enquanto o Heroic estiver ativo.
-  - Inicia `/opt/heroic/heroic` em **Wayland nativo** (`GDK_BACKEND=wayland`, `QT_QPA_PLATFORM=wayland`, `unset DISPLAY`, `--no-sandbox --ozone-platform=wayland --enable-features=UseOzonePlatform,WaylandWindowDecorations --remote-debugging-port=9222`).
+- **Container base:** `ghcr.io/games-on-whales/xfce:edge` (app consolidado **`Heroic`** / `WolfHeroic`, resolução dinâmica controlada pelo Moonlight e `nofile=524288`).
+- **Execução sem FUSE:** o AppImage do Heroic deve estar extraído em `profiles/default/bin/squashfs-root` (ignorado pelo Git) e montado em `/opt/heroic:ro` (e em `/opt/Heroic:ro` no container do Steam para atalhos `--no-gui`).
+- **`heroic-startup.sh` (`/opt/gow/startup.sh:rw`):**
+  - Trunca `/logs/heroic.log` a cada sessão (evitando crescimento infinito).
+  - Gera `${XDG_RUNTIME_DIR:-/tmp}/sway-heroic.conf` com `xwayland enable`, `workspace_layout tabbed`, resolução dinâmica `${GAMESCOPE_WIDTH}x${GAMESCOPE_HEIGHT}` e regras de tela cheia para jogos Proton/Wine/Gamescope (`steam_app_*`, `wine*`, `proton*`, `*.exe`).
+  - Executa `dbus-run-session -- sway --unsupported-gpu -c "$SWAY_CFG"`, abrindo `/opt/heroic/heroic --no-sandbox --ozone-platform=wayland --enable-features=UseOzonePlatform,WaylandWindowDecorations` (sem porta de debug `9222`) e encerrando o Sway automaticamente (`; swaymsg exit || killall sway`) ao fechar o Heroic.
+  - Benefícios: suporte a foco `xdg_activation_v1`, fallback Xwayland automático para jogos/Protons antigos (ex.: `GE-Proton8-32`, `Proton 9`) e encerramento limpo da sessão Moonlight.
 - **`heroic-init.d/10-gamepad-udev.sh` (`/etc/cont-init.d/10-gamepad-udev.sh:ro`):**
-  - Instala libs `i386` de `/home/retro/.config/heroic/apt-cache/*.deb` (se existir) e aplica o patch opcional para neutralizar `steam.exe` dummy em prefixos Proton clássicos (buscando `HEROIC_FALLOUT_PREFIX` ou `/home/*/Games/Heroic/Prefixes/default/...`). O isolamento de inputs e metadados udev dos controles fica centralizado exclusivamente em `99-isolate-inputs.sh`.
+  - Sincroniza `/etc/localtime` e `/etc/timezone` a partir de `TZ` e garante propriedade `retro:retro` em `/home/retro/.config` e `/home/retro/.config/sway` (evitando erro `Permission denied` quando o Docker cria o pai `.config` como `root:root` por causa do bind mount `.config/heroic`, sem `chown -R` recursivo no mount).
+  - Valida compatibilidade de versão (`mesa-libgallium` da imagem vs. `.deb` em `/home/retro/.config/heroic/apt-cache/`) antes de instalar libs `i386` (pulando com aviso explícito em caso de mismatch pós-`docker pull`).
+  - Aplica o patch opcional de `steam.exe` dummy em prefixos Proton clássicos (`/home/*/Games/Heroic/Prefixes/default/...`). O isolamento de inputs e metadados udev dos controles fica centralizado exclusivamente em `99-isolate-inputs.sh`.
+- **Nota operacional:** não abrir o Heroic no desktop do host simultaneamente à sessão do Wolf enquanto `~/.config/heroic` for compartilhado em `:rw`.
 
 ---
 

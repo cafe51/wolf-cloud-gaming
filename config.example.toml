@@ -337,50 +337,9 @@ video/x-raw, framerate={fps}/1
         type = 'docker'
 
     [[profiles.apps]]
-    icon_png_path = '/etc/wolf/profile_data/default/icons/heroic_720p.png'
-    start_virtual_compositor = true
-    title = 'Heroic (720p)'
-
-        [profiles.apps.runner]
-        base_create_json = '''{
-  "HostConfig": {
-    "IpcMode": "host",
-    "Privileged": true,
-    "CapAdd": ["NET_RAW", "MKNOD", "NET_ADMIN", "SYS_NICE"],
-    "DeviceCgroupRules": ["c 13:* rmw", "c 244:* rmw", "c 10:229 rwm"]
-  }
-}'''
-        devices = []
-        env = [
-            'WIDTH=1280',
-            'HEIGHT=720',
-            'CLIENT_WIDTH=1280',
-            'CLIENT_HEIGHT=720',
-            'GAMESCOPE_WIDTH=1280',
-            'GAMESCOPE_HEIGHT=720',
-            'GOW_REQUIRED_DEVICES=/dev/input/* /dev/dri/*',
-            'TZ=America/Sao_Paulo',
-            'GDK_BACKEND=wayland',
-            'QT_QPA_PLATFORM=wayland',
-            'PULSE_SERVER=unix:/run/user/wolf/pulse-socket',
-            'SDL_GAMECONTROLLERCONFIG=030015655e040000ea02000008040000,Wolf X-Box One (virtual) pad,platform:Linux,a:b0,b:b1,x:b2,y:b3,back:b6,start:b7,guide:b8,leftstick:b9,rightstick:b10,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpright:h0.2,dpdown:h0.4,dpleft:h0.8,leftx:a0,lefty:a1,rightx:a3,righty:a4,lefttrigger:a2,righttrigger:a5'
-        ]
-        image = 'ghcr.io/games-on-whales/xfce:edge'
-        mounts = [
-            '/opt/wolf-data/profiles/default/bin/squashfs-root:/opt/heroic:ro',
-            '/opt/wolf-data/profiles/default/bin/heroic-startup.sh:/opt/gow/startup.sh:rw',
-            '/opt/wolf-data/logs:/logs:rw',
-            '/opt/wolf-data/profiles/default/bin/heroic-init.d/10-gamepad-udev.sh:/etc/cont-init.d/10-gamepad-udev.sh:ro',
-            '/opt/wolf-data/profiles/default/bin/dolphin-standalone/99-isolate-inputs.sh:/etc/cont-init.d/99-isolate-inputs.sh:ro'
-        ]
-        name = 'WolfHeroic720'
-        ports = []
-        type = 'docker'
-
-    [[profiles.apps]]
     icon_png_path = '/etc/wolf/profile_data/default/icons/heroic_1080p.png'
     start_virtual_compositor = true
-    title = 'Heroic (1080p)'
+    title = 'Heroic'
 
         [profiles.apps.runner]
         base_create_json = '''{
@@ -388,17 +347,12 @@ video/x-raw, framerate={fps}/1
     "IpcMode": "host",
     "Privileged": true,
     "CapAdd": ["NET_RAW", "MKNOD", "NET_ADMIN", "SYS_NICE"],
+    "Ulimits": [{"Name":"nofile", "Hard":524288, "Soft":524288}],
     "DeviceCgroupRules": ["c 13:* rmw", "c 244:* rmw", "c 10:229 rwm"]
   }
 }'''
         devices = []
         env = [
-            'WIDTH=1920',
-            'HEIGHT=1080',
-            'CLIENT_WIDTH=1920',
-            'CLIENT_HEIGHT=1080',
-            'GAMESCOPE_WIDTH=1920',
-            'GAMESCOPE_HEIGHT=1080',
             'GOW_REQUIRED_DEVICES=/dev/input/* /dev/dri/*',
             'TZ=America/Sao_Paulo',
             'GDK_BACKEND=wayland',
@@ -408,12 +362,13 @@ video/x-raw, framerate={fps}/1
         ]
         image = 'ghcr.io/games-on-whales/xfce:edge'
         mounts = [
+            '/opt/wolf-data/profiles/default/bin/dolphin-standalone/99-isolate-inputs.sh:/etc/cont-init.d/99-isolate-inputs.sh:ro',
+            '/opt/wolf-data/profiles/default/bin/heroic-init.d/10-gamepad-udev.sh:/etc/cont-init.d/10-gamepad-udev.sh:ro',
             '/opt/wolf-data/profiles/default/bin/squashfs-root:/opt/heroic:ro',
             '/opt/wolf-data/profiles/default/bin/heroic-startup.sh:/opt/gow/startup.sh:rw',
             '/opt/wolf-data/logs:/logs:rw',
-            '/opt/wolf-data/profiles/default/bin/heroic-init.d/10-gamepad-udev.sh:/etc/cont-init.d/10-gamepad-udev.sh:ro',
-            '/opt/wolf-data/profiles/default/bin/dolphin-standalone/99-isolate-inputs.sh:/etc/cont-init.d/99-isolate-inputs.sh:ro'
+            '/etc/wolf/shared/umu:/home/retro/.local/share/umu:rw'
         ]
-        name = 'WolfHeroic1080'
+        name = 'WolfHeroic'
         ports = []
         type = 'docker'
